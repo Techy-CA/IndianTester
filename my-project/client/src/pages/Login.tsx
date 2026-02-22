@@ -14,6 +14,7 @@ export default function Login() {
     if (!email || !password) { setError('Please fill in all fields.'); return; }
     setLoading(true); setError('');
     try {
+      const API = import.meta.env.VITE_API_URL ?? ''
       const res = await axios.post('http://localhost:5000/api/auth/login', { email, password });
 
       // Save ALL fields to localStorage
