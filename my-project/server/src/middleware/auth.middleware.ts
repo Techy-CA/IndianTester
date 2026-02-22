@@ -1,3 +1,5 @@
+import dotenv from 'dotenv';
+dotenv.config();   // ← YE ADD KARO — top pe
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
@@ -29,3 +31,6 @@ export const authorizeRoles = (...roles: string[]) => {
     next();
   };
 };
+
+export const verifyToken = protect;
+export const requireRole = (roles: string[]) => authorizeRoles(...roles);

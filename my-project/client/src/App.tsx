@@ -7,6 +7,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRegister from './pages/AdminRegister';
 import BuyerProfile from './pages/BuyerProfile';
+import MyOrders from './pages/MyOrders';
 
 function App() {
   return (
@@ -17,6 +18,11 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/register" element={<AdminRegister />} />
+        <Route path="/buyer/orders" element={
+  <ProtectedRoute allowedRoles={['buyer']}>
+    <MyOrders />
+  </ProtectedRoute>
+} />
         <Route path="/buyer/profile" element={
   <ProtectedRoute allowedRoles={['buyer', 'admin', 'superadmin']}>
     <BuyerProfile />

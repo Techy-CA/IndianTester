@@ -88,10 +88,10 @@ export default function BuyerProfile() {
     upiId:    localStorage.getItem('upiId')    || '',
   });
   const [passwords, setPasswords] = useState({ current: '', newPass: '', confirm: '' });
-  const [showPass, setShowPass] = useState({ current: false, newPass: false, confirm: false });
-  const [success, setSuccess] = useState('');
-  const [error, setError]     = useState('');
-  const [loading, setLoading] = useState(false);
+  const [showPass, setShowPass]   = useState({ current: false, newPass: false, confirm: false });
+  const [success, setSuccess]     = useState('');
+  const [error, setError]         = useState('');
+  const [loading, setLoading]     = useState(false);
 
   const handleLogout = () => { localStorage.clear(); navigate('/login'); };
 
@@ -102,34 +102,18 @@ export default function BuyerProfile() {
     setPasswords(prev => ({ ...prev, [field]: e.target.value }));
 
   const handleUpdate = async () => {
-    if (!form.email.trim() || !form.whatsapp.trim()) {
-      setError('Email and WhatsApp are required.'); return;
-    }
-    if (!/^\d{10}$/.test(form.whatsapp)) {
-      setError('Enter a valid 10-digit WhatsApp number.'); return;
-    }
-    if (passwords.newPass && passwords.newPass !== passwords.confirm) {
-      setError('New passwords do not match.'); return;
-    }
-    if (passwords.newPass && passwords.newPass.length < 6) {
-      setError('New password must be at least 6 characters.'); return;
-    }
-    if (passwords.newPass && !passwords.current) {
-      setError('Enter your current password to change it.'); return;
-    }
+    if (!form.email.trim() || !form.whatsapp.trim()) { setError('Email and WhatsApp are required.'); return; }
+    if (!/^\d{10}$/.test(form.whatsapp))              { setError('Enter a valid 10-digit WhatsApp number.'); return; }
+    if (passwords.newPass && passwords.newPass !== passwords.confirm) { setError('New passwords do not match.'); return; }
+    if (passwords.newPass && passwords.newPass.length < 6)            { setError('New password must be at least 6 characters.'); return; }
+    if (passwords.newPass && !passwords.current)                      { setError('Enter your current password to change it.'); return; }
 
     setLoading(true); setError(''); setSuccess('');
     try {
       const token = localStorage.getItem('token');
-      const payload: any = {
-        email:    form.email,
-        whatsapp: form.whatsapp,
-        upiId:    form.upiId || undefined,
-      };
-      if (passwords.newPass) {
-        payload.currentPassword = passwords.current;
-        payload.newPassword     = passwords.newPass;
-      }
+      const payload: any = { email: form.email, whatsapp: form.whatsapp, upiId: form.upiId || undefined };
+      if (passwords.newPass) { payload.currentPassword = passwords.current; payload.newPassword = passwords.newPass; }
+
       const res = await axios.put('http://localhost:5000/api/user/profile', payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -144,31 +128,27 @@ export default function BuyerProfile() {
     } finally { setLoading(false); }
   };
 
-  const inputClass = "w-full px-4 py-3 rounded-xl border-2 border-black/15 text-sm font-semibold text-gray-800 placeholder:text-gray-300 outline-none bg-white transition-all";
-  const focusStyle = (e: React.FocusEvent<HTMLInputElement>) => {
-    e.target.style.borderColor = '#000';
-    e.target.style.boxShadow   = '2px 2px 0px 0px #000000';
-  };
-  const blurStyle = (e: React.FocusEvent<HTMLInputElement>) => {
-    e.target.style.borderColor = 'rgba(0,0,0,0.15)';
-    e.target.style.boxShadow   = '1px 1px 0px 0px #00000010';
-  };
+  const inputClass = "w-full px-3 py-2.5 rounded-xl border-2 border-black/15 text-sm font-semibold text-gray-800 placeholder:text-gray-300 outline-none bg-white transition-all";
+  const focusStyle = (e: React.FocusEvent<HTMLInputElement>) => { e.target.style.borderColor = '#000'; e.target.style.boxShadow = '2px 2px 0px 0px #000000'; };
+  const blurStyle  = (e: React.FocusEvent<HTMLInputElement>) => { e.target.style.borderColor = 'rgba(0,0,0,0.15)'; e.target.style.boxShadow = 'none'; };
 
   const viewFields = [
-    { icon: <IconUser />,   label: 'Full Name',        value: name,            locked: true  },
-    { icon: <IconMail />,   label: 'Email',             value: form.email,      locked: false },
-    { icon: <IconPhone />,  label: 'WhatsApp',          value: form.whatsapp,   locked: false },
-    { icon: <IconUPI />,    label: 'UPI ID',            value: form.upiId || '—', locked: false },
-    { icon: <IconShield />, label: 'Role',              value: role.charAt(0).toUpperCase() + role.slice(1), locked: true },
+    { icon: <IconUser />,   label: 'Full Name', value: name,              locked: true  },
+    { icon: <IconMail />,   label: 'Email',     value: form.email,        locked: false },
+    { icon: <IconPhone />,  label: 'WhatsApp',  value: form.whatsapp,     locked: false },
+    { icon: <IconUPI />,    label: 'UPI ID',    value: form.upiId || '—', locked: false },
+    { icon: <IconShield />, label: 'Role',      value: role.charAt(0).toUpperCase() + role.slice(1), locked: true },
   ];
 
   return (
-    <div className="min-h-screen w-full bg-[#f0fdf4]">
+    <div className="min-h-screen w-full bg-[#f0fdf4] overflow-x-hidden">
 
       {/* Sticky Navbar */}
-      <nav className="w-full bg-white border-b-2 border-black px-4 py-3 flex items-center justify-between sticky top-0 z-50"
+      <nav className="w-full bg-white border-b-2 border-black px-3 py-2.5 flex items-center justify-between sticky top-0 z-50"
         style={{ boxShadow: '0 2px 0px 0px #000000' }}>
-        <div className="flex items-center gap-2">
+
+        {/* Left */}
+        <div className="flex items-center gap-1.5 shrink-0">
           <div className="w-7 h-7 bg-black rounded-md flex items-center justify-center shrink-0">
             <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
               <rect x="1" y="1" width="6" height="6" rx="1" fill="white"/>
@@ -179,15 +159,17 @@ export default function BuyerProfile() {
           </div>
           <span className="font-bold text-black text-sm tracking-tight">IndianTester</span>
         </div>
-        <div className="flex items-center gap-2 shrink-0">
+
+        {/* Right */}
+        <div className="flex items-center gap-1.5 shrink-0">
           <Link to="/buyer/dashboard"
-            className="flex items-center gap-1.5 text-xs font-bold text-black/50 hover:text-black border-2 border-black/10 hover:border-black px-2.5 py-1.5 rounded-full transition-all"
+            className="flex items-center gap-1 px-2 py-1.5 rounded-full border-2 border-black/20 hover:border-black text-xs font-bold text-black/50 hover:text-black transition-all"
             style={{ boxShadow: '1px 1px 0px 0px #00000015' }}>
             <IconArrow />
             <span className="hidden sm:block">Dashboard</span>
           </Link>
           <button onClick={handleLogout}
-            className="flex items-center gap-1.5 text-xs font-bold text-black border-2 border-black px-2.5 py-1.5 rounded-full hover:bg-red-50 hover:border-red-400 hover:text-red-600 transition-all"
+            className="flex items-center gap-1 px-2 py-1.5 rounded-full border-2 border-black bg-white text-xs font-black text-black hover:bg-red-50 hover:border-red-400 hover:text-red-600 transition-all"
             style={{ boxShadow: '2px 2px 0px 0px #000000' }}>
             <IconLogout />
             <span className="hidden sm:block">Logout</span>
@@ -196,19 +178,19 @@ export default function BuyerProfile() {
       </nav>
 
       {/* Content */}
-      <div className="w-full max-w-lg mx-auto px-4 py-6 space-y-4">
+      <div className="w-full max-w-lg mx-auto px-3 py-5 space-y-3">
 
         {/* Header Card */}
-        <div className="rounded-2xl border-2 border-black bg-[#86efac] p-5"
-          style={{ boxShadow: '4px 4px 0px 0px #000000' }}>
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-xl bg-yellow-400 border-2 border-black flex items-center justify-center text-lg font-black text-black shrink-0">
+        <div className="rounded-2xl border-2 border-black bg-[#86efac] p-4"
+          style={{ boxShadow: '3px 3px 0px 0px #000000' }}>
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-xl bg-yellow-400 border-2 border-black flex items-center justify-center text-base font-black text-black shrink-0">
               {initials}
             </div>
             <div className="min-w-0">
-              <h1 className="text-lg font-black text-black tracking-tight truncate">{name}</h1>
+              <h1 className="text-base font-black text-black tracking-tight truncate">{name}</h1>
               <p className="text-xs text-black/50 truncate">{form.email || 'No email'}</p>
-              <div className="inline-flex items-center gap-1.5 mt-1.5 px-2 py-0.5 rounded-full bg-black/10 border border-black/10">
+              <div className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-full bg-black/10 border border-black/10">
                 <span className="w-1.5 h-1.5 rounded-full bg-green-700 shrink-0"/>
                 <span className="text-[9px] font-black text-black/60 uppercase tracking-widest">{role}</span>
               </div>
@@ -218,29 +200,29 @@ export default function BuyerProfile() {
 
         {/* Alerts */}
         {success && (
-          <div className="flex items-center gap-2 px-4 py-3 rounded-xl border-2 border-green-500 bg-white text-green-700 text-sm font-semibold"
+          <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl border-2 border-green-500 bg-white text-green-700 text-sm font-semibold"
             style={{ boxShadow: '2px 2px 0px 0px #16a34a' }}>
             <IconCheck /> {success}
           </div>
         )}
         {error && (
-          <div className="flex items-center gap-2 px-4 py-3 rounded-xl border-2 border-red-400 bg-white text-red-600 text-sm font-semibold"
+          <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl border-2 border-red-400 bg-white text-red-600 text-sm font-semibold"
             style={{ boxShadow: '2px 2px 0px 0px #ef4444' }}>
             <IconX /> {error}
           </div>
         )}
 
         {/* Main Card */}
-        <div className="rounded-2xl border-2 border-black bg-white p-5 space-y-4"
-          style={{ boxShadow: '4px 4px 0px 0px #000000' }}>
+        <div className="rounded-2xl border-2 border-black bg-white p-4 space-y-3"
+          style={{ boxShadow: '3px 3px 0px 0px #000000' }}>
 
           {!editing ? (
             <>
-              <p className="text-[10px] font-black text-black/25 uppercase tracking-widest">Account Details</p>
+              <p className="text-[9px] font-black text-black/25 uppercase tracking-widest">Account Details</p>
 
               {viewFields.map(({ icon, label, value, locked }, i, arr) => (
                 <div key={label}
-                  className={`flex items-center gap-3 py-3 ${i < arr.length - 1 ? 'border-b-2 border-dashed border-black/10' : ''}`}>
+                  className={`flex items-center gap-3 py-2.5 ${i < arr.length - 1 ? 'border-b-2 border-dashed border-black/10' : ''}`}>
                   <div className="w-8 h-8 rounded-xl bg-[#f0fdf4] border-2 border-black/10 flex items-center justify-center text-black/35 shrink-0">
                     {icon}
                   </div>
@@ -258,7 +240,7 @@ export default function BuyerProfile() {
 
               <button
                 onClick={() => { setEditing(true); setError(''); setSuccess(''); }}
-                className="w-full py-3 rounded-xl text-sm font-black border-2 border-black flex items-center justify-center gap-2 transition-all mt-1"
+                className="w-full py-3 rounded-xl text-sm font-black border-2 border-black flex items-center justify-center gap-2 transition-all"
                 style={{ backgroundColor: '#000', color: '#fff', boxShadow: '3px 3px 0px 0px #166534' }}
                 onMouseEnter={e => { e.currentTarget.style.transform = 'translate(-1px,-1px)'; e.currentTarget.style.boxShadow = '4px 4px 0px 0px #166534'; }}
                 onMouseLeave={e => { e.currentTarget.style.transform = 'translate(0,0)'; e.currentTarget.style.boxShadow = '3px 3px 0px 0px #166534'; }}>
@@ -267,57 +249,54 @@ export default function BuyerProfile() {
             </>
           ) : (
             <>
-              <p className="text-[10px] font-black text-black/25 uppercase tracking-widest">Edit Profile</p>
+              <p className="text-[9px] font-black text-black/25 uppercase tracking-widest">Edit Profile</p>
 
-              {/* Name — locked */}
+              {/* Name locked */}
               <div className="flex items-center gap-3 p-3 rounded-xl bg-black/[0.03] border-2 border-dashed border-black/10">
                 <div className="w-8 h-8 rounded-xl bg-[#f0fdf4] border-2 border-black/10 flex items-center justify-center text-black/30 shrink-0">
                   <IconUser />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-[9px] font-bold text-black/30 uppercase tracking-widest">Full Name — Cannot be changed</p>
+                  <p className="text-[9px] font-bold text-black/30 uppercase tracking-widest">Name — Cannot be changed</p>
                   <p className="text-sm font-black text-black/40 truncate">{name}</p>
                 </div>
                 <IconLock />
               </div>
 
-              {/* Editable Fields */}
+              {/* Editable fields */}
               {[
-                { key: 'email',    label: 'Email Address',    icon: <IconMail />,  type: 'email', placeholder: 'you@email.com'  },
-                { key: 'whatsapp', label: 'WhatsApp Number',  icon: <IconPhone />, type: 'tel',   placeholder: '10-digit number' },
-                { key: 'upiId',    label: 'UPI ID',           icon: <IconUPI />,   type: 'text',  placeholder: 'name@upi'        },
+                { key: 'email',    label: 'Email Address',   icon: <IconMail />,  type: 'email', placeholder: 'you@email.com'  },
+                { key: 'whatsapp', label: 'WhatsApp Number', icon: <IconPhone />, type: 'tel',   placeholder: '10-digit number' },
+                { key: 'upiId',    label: 'UPI ID',          icon: <IconUPI />,   type: 'text',  placeholder: 'name@upi'        },
               ].map(({ key, label, icon, type, placeholder }) => (
-                <div key={key} className="space-y-1.5">
-                  <label className="flex items-center gap-1.5 text-[10px] font-black text-black/40 uppercase tracking-widest">
+                <div key={key} className="space-y-1">
+                  <label className="flex items-center gap-1.5 text-[9px] font-black text-black/40 uppercase tracking-widest">
                     {icon} {label}
                   </label>
                   <input type={type} value={form[key as keyof typeof form]}
                     onChange={updateForm(key)} placeholder={placeholder}
                     className={inputClass}
-                    style={{ boxShadow: '1px 1px 0px 0px #00000010' }}
                     onFocus={focusStyle} onBlur={blurStyle} />
                 </div>
               ))}
 
-              {/* Password Change */}
-              <div className="pt-3 border-t-2 border-dashed border-black/10 space-y-3">
+              {/* Password */}
+              <div className="pt-2 border-t-2 border-dashed border-black/10 space-y-2.5">
                 <div className="flex items-center gap-1.5">
                   <IconLock />
-                  <p className="text-[10px] font-black text-black/30 uppercase tracking-widest">Change Password — optional</p>
+                  <p className="text-[9px] font-black text-black/30 uppercase tracking-widest">Change Password — optional</p>
                 </div>
-
                 {([
-                  { key: 'current', label: 'Current Password', show: showPass.current, toggle: () => setShowPass(p => ({ ...p, current: !p.current })) },
-                  { key: 'newPass', label: 'New Password',     show: showPass.newPass, toggle: () => setShowPass(p => ({ ...p, newPass: !p.newPass })) },
+                  { key: 'current', label: 'Current Password',     show: showPass.current, toggle: () => setShowPass(p => ({ ...p, current: !p.current })) },
+                  { key: 'newPass', label: 'New Password',         show: showPass.newPass, toggle: () => setShowPass(p => ({ ...p, newPass: !p.newPass })) },
                   { key: 'confirm', label: 'Confirm New Password', show: showPass.confirm, toggle: () => setShowPass(p => ({ ...p, confirm: !p.confirm })) },
                 ] as { key: 'current'|'newPass'|'confirm', label: string, show: boolean, toggle: () => void }[]).map(({ key, label, show, toggle }) => (
-                  <div key={key} className="space-y-1.5">
+                  <div key={key} className="space-y-1">
                     <label className="text-[9px] font-black text-black/30 uppercase tracking-widest">{label}</label>
                     <div className="relative">
                       <input type={show ? 'text' : 'password'} value={passwords[key]}
                         onChange={updatePass(key)} placeholder="••••••••"
                         className={`${inputClass} pr-10`}
-                        style={{ boxShadow: '1px 1px 0px 0px #00000010' }}
                         onFocus={focusStyle} onBlur={blurStyle} />
                       <button type="button" onClick={toggle}
                         className="absolute right-3 top-1/2 -translate-y-1/2 text-black/30 hover:text-black transition-colors p-1">
@@ -328,27 +307,27 @@ export default function BuyerProfile() {
                 ))}
               </div>
 
-              {/* Actions */}
-              <div className="flex gap-3 pt-1">
+              {/* Cancel + Save */}
+              <div className="flex gap-2 pt-1">
                 <button
                   onClick={() => { setEditing(false); setError(''); setPasswords({ current: '', newPass: '', confirm: '' }); }}
-                  className="flex-1 py-3 rounded-xl text-sm font-black border-2 border-black bg-white flex items-center justify-center gap-1.5 transition-all"
+                  className="flex-1 py-2.5 rounded-xl text-sm font-black border-2 border-black bg-white flex items-center justify-center gap-1.5 transition-all"
                   style={{ boxShadow: '2px 2px 0px 0px #000000' }}
                   onMouseEnter={e => { e.currentTarget.style.transform = 'translate(-1px,-1px)'; e.currentTarget.style.boxShadow = '3px 3px 0px 0px #000000'; }}
                   onMouseLeave={e => { e.currentTarget.style.transform = 'translate(0,0)'; e.currentTarget.style.boxShadow = '2px 2px 0px 0px #000000'; }}>
                   <IconX /> Cancel
                 </button>
                 <button onClick={handleUpdate} disabled={loading}
-                  className="flex-1 py-3 rounded-xl text-sm font-black border-2 border-black flex items-center justify-center gap-1.5 transition-all"
+                  className="flex-1 py-2.5 rounded-xl text-sm font-black border-2 border-black flex items-center justify-center gap-1.5 transition-all"
                   style={{
                     backgroundColor: loading ? '#e5e7eb' : '#000',
-                    color: loading ? '#9ca3af' : '#fff',
-                    boxShadow: loading ? 'none' : '3px 3px 0px 0px #166534',
-                    cursor: loading ? 'not-allowed' : 'pointer'
+                    color:           loading ? '#9ca3af' : '#fff',
+                    boxShadow:       loading ? 'none' : '3px 3px 0px 0px #166534',
+                    cursor:          loading ? 'not-allowed' : 'pointer'
                   }}
                   onMouseEnter={e => { if (!loading) { e.currentTarget.style.transform = 'translate(-1px,-1px)'; e.currentTarget.style.boxShadow = '4px 4px 0px 0px #166534'; }}}
                   onMouseLeave={e => { if (!loading) { e.currentTarget.style.transform = 'translate(0,0)'; e.currentTarget.style.boxShadow = '3px 3px 0px 0px #166534'; }}}>
-                  {loading ? 'Saving...' : <><IconCheck /> Save Changes</>}
+                  {loading ? 'Saving...' : <><IconCheck /> Save</>}
                 </button>
               </div>
             </>
